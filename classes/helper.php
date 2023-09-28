@@ -103,42 +103,8 @@ class helper {
      * @return string banner HTML
      */
     public static function get_banner_html() : string {
-        $classes = 'local_switchrolebanner banner alert alert-info';
-        $text  = '<button type="button" class="close" onclick="switchrollebanner_close(this);">×</button>';
-        $text .= '<span><< Switch roll banner placeholder >></span>';
-        $html  = html_writer::div($text, $classes);
-        $html .= self::get_banner_inline_js();
+        global $OUTPUT;
 
-        return $html;
-    }
-
-    /**
-     * Builds and returns the inline banner JS.
-     *
-     * @return string inline banner JS
-     */
-    public static function get_banner_inline_js() : string {
-        $js = <<<EOD
-<script>
-    function switchrollebanner_close(el) {
-        var banner = el.parentElement;
-        var parent = banner.parentElement;
-        var body = document.body;
-        body.classList.remove('local_switchrolebanner_visible');
-        parent.removeChild(banner);
-    }
-    document.addEventListener("DOMContentLoaded", function(event) {
-        document.body.className += ' local_switchrolebanner_visible';
-
-        var banner = document.querySelector('.local_switchrolebanner.banner'),
-            pageHeader = document.querySelector('#page-header'),
-            mainInner = document.querySelector('.main-inner');
-
-        mainInner.insertBefore(banner, pageHeader);
-    });
-</script>
-EOD;
-
-        return $js;
+        return $OUTPUT->render_from_template('local_switchrolebanner/banner', []);
     }
 }
