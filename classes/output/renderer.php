@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lang strings.
+ * Switch role banner rendrer.
  *
  * @package    local_switchrolebanner
  * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
@@ -23,9 +23,29 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_switchrolebanner\output;
+
 defined('MOODLE_INTERNAL') || die;
 
-$string['pluginname'] = 'Switch role banner';
+use plugin_renderer_base;
 
-$string['viewingasadmin'] = 'You are currently viewing this course with your site or course category role.';
-$string['viewingasrole'] = 'You are currently viewing this course with your <b>{$a}</b> course role.';
+/**
+ * Switch role banner rendrer.
+ *
+ * @package    local_switchrolebanner
+ * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
+ * @copyright  2023 Catalyst IT
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class renderer extends plugin_renderer_base {
+
+    /**
+     * Return the banner HTML.
+     *
+     * @param banner $banner The banner renderable
+     * @return string HTML string
+     */
+    public function render_banner(banner $banner) : string {
+        return $this->render_from_template('local_switchrolebanner/banner', $banner->export_for_template($this));
+    }
+}

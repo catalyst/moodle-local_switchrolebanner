@@ -28,6 +28,7 @@ namespace local_switchrolebanner;
 use context_course;
 use context_coursecat;
 use html_writer;
+use local_switchrolebanner\output\banner;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -40,6 +41,21 @@ defined('MOODLE_INTERNAL') || die;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
+
+    /**
+     * @var array User's course roles
+     */
+    private static $courseroles = null;
+
+    /**
+     * @var array User's switchable course roles
+     */
+    private static $switchablecourseroles = null;
+
+    /**
+     * @var int User's switched course role
+     */
+    private static $switchedcourserole = null;
 
     /**
      * Return if the banner should be shown or not.
@@ -57,7 +73,13 @@ class helper {
             return false;
         }
 
-        if (empty($courseroles = self::get_user_course_role())) {
+        if (empty(self::get_user_course_roles())) {
+            return false;
+        }
+
+        $switchablecourseroles = self::get_user_switchable_course_roles();
+        $switchedcourserole = self::get_user_switched_course_role();
+        if (empty($switchablecourseroles) && empty($switchedcourserole)) {
             return false;
         }
 
@@ -83,18 +105,91 @@ class helper {
     }
 
     /**
+     * Get the user's roles in the course that are switchable.
+     *
+     * @return array an array of roles
+     */
+    public static function get_user_switchable_course_roles() : array {
+        global $USER, $COURSE;
+
+        if (!is_null(self::$switchablecourseroles)) {
+            return self::$switchablecourseroles;
+        }
+
+        $userid = $USER->id;
+        $context = context_course::instance($COURSE->id, MUST_EXIST);
+
+        $courseroles = self::get_user_course_roles();
+        if (empty($courseroles)) {
+            self::$switchablecourseroles = [];
+            return self::$switchablecourseroles;
+        };
+
+        $switchableroles = get_switchable_roles($context);
+        if (empty($switchableroles)) {
+            self::$switchablecourseroles = [];
+            return self::$switchablecourseroles;
+        };
+
+        foreach ($switchableroles as $rid => $switchablerole) {
+            if (!array_key_exists($rid, $courseroles)) {
+                unset($switchableroles[$rid]);
+            }
+        }
+
+        self::$switchablecourseroles = $switchableroles;
+        return self::$switchablecourseroles;
+    }
+
+    /**
      * Get the user's roles in the course.
      *
      * @return array an array of roles
      */
-    public static function get_user_course_role() : array {
+    public static function get_user_course_roles() : array {
         global $USER, $COURSE;
 
-        $userid = $USER->id;
-        $context = context_course::instance($COURSE->id, MUST_EXIST);
-        $usersroles = get_users_roles($context, [$userid], false);
+        if (!is_null(self::$courseroles)) {
+            return self::$courseroles;
+        }
 
-        return $usersroles[$userid];
+        $context = context_course::instance($COURSE->id, MUST_EXIST);
+        $ras = get_user_roles($context, $USER->id, false);
+
+        $roles = [];
+        foreach ($ras as $ra) {
+            $roles[$ra->roleid] = $ra->shortname;
+        }
+
+        self::$courseroles = $roles;
+        return self::$courseroles;
+    }
+
+    /**
+     * Get the user's current switched role if is one of their course roles.
+     *
+     * @return int the id of the switched role or 0 if role has not been switched
+     */
+    public static function get_user_switched_course_role() : int {
+        global $USER, $COURSE;
+
+        if (!is_null(self::$switchedcourserole)) {
+            return self::$switchedcourserole;
+        }
+
+        $role = 0;
+
+        $context = context_course::instance($COURSE->id, MUST_EXIST);
+        if (!empty($USER->access['rsw'][$context->path])) {
+            $rid = $USER->access['rsw'][$context->path];
+            $courseroles = self::get_user_course_roles();
+            if (array_key_exists($rid, $courseroles)) {
+                $role = $rid;
+            }
+        }
+
+        self::$switchedcourserole = $role;
+        return self::$switchedcourserole;
     }
 
     /**
@@ -103,8 +198,11 @@ class helper {
      * @return string banner HTML
      */
     public static function get_banner_html() : string {
-        global $OUTPUT;
+        global $PAGE;
 
-        return $OUTPUT->render_from_template('local_switchrolebanner/banner', []);
+        $renderable = new banner();
+        $renderer = $PAGE->get_renderer('local_switchrolebanner');
+
+        return $renderer->render($renderable);
     }
 }
