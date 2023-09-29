@@ -43,6 +43,13 @@ defined('MOODLE_INTERNAL') || die;
 class helper {
 
     /**
+     * The user preference value to indicate the last role a user switched to.
+     *
+     * @var LAST_COURSE_ROLE
+     */
+    const LAST_COURSE_ROLE = 'local_switchrolebanner_last_course_role_';
+
+    /**
      * @var array User's course roles
      */
     private static $courseroles = null;
@@ -204,5 +211,73 @@ class helper {
         $renderer = $PAGE->get_renderer('local_switchrolebanner');
 
         return $renderer->render($renderable);
+    }
+
+    /**
+     * Sets the last course role as a user preference. This is to be used to return the user
+     * to their last switched role on their next session.
+     *
+     * @param int $roleid the role id to store
+     * @return void
+     */
+    public static function set_user_last_role(int $roleid) : void {
+        global $COURSE;
+
+        $key = self::LAST_COURSE_ROLE . $COURSE->id;
+        if ($roleid == 0) {
+            unset_user_preference($key);
+        } else {
+            set_user_preference($key, $roleid);
+        }
+    }
+
+    /**
+     * Gets the last course role from user preference. This is to be used to return the user
+     * to their last switched role on a new session.
+     *
+     * @return int the last role id the user switched to for this course
+     */
+    public static function get_user_last_role() : int {
+        global $COURSE;
+
+        return get_user_preferences(self::LAST_COURSE_ROLE . $COURSE->id, 0);
+    }
+
+    /**
+     * Handles all role switch processing, i.e. setting last switched role or switching to
+     * role last switched to in a previous session.
+     *
+     * @return void
+     */
+    public static function handle_role_switch() : void {
+        global $COURSE;
+
+        if ($COURSE->id == SITEID) {
+            return;
+        }
+
+        $switchrole = optional_param('switchrole', -1, PARAM_INT);
+        $switchablecourseroles = self::get_user_switchable_course_roles();
+
+        // If we are switching to a relevant role set it as the last role and then return.
+        $isswitchablecourserole = array_key_exists($switchrole, $switchablecourseroles);
+        if ($switchrole > -1 && ($isswitchablecourserole || $switchrole == 0)) {
+            self::set_user_last_role($switchrole);
+            return;
+        }
+
+        // If we have already switched roles or there is no last switched role just return.
+        if (is_role_switched($COURSE->id) || !$roleid = self::get_user_last_role()) {
+            return;
+        }
+
+        // Is the last switched role we saved still a switchable enrolled role?
+        if (array_key_exists($roleid, $switchablecourseroles)) {
+            $context = context_course::instance($COURSE->id, MUST_EXIST);
+            role_switch($roleid, $context);
+        } else {
+            // For some reason this role doesn't meet our conditions, let's just reset the preference.
+            self::set_user_last_role(0);
+        }
     }
 }

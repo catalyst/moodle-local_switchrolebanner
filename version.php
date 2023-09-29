@@ -25,6 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023092601;              // Current version of the plugin (Date: YYYYMMDDXX).
+$plugin->version   = 2023092602;              // Current version of the plugin (Date: YYYYMMDDXX).
 $plugin->requires  = 2022112805;              // Requires Moodle 4.1 and above.
 $plugin->component = 'local_switchrolebanner';

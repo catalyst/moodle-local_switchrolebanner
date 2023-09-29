@@ -26,11 +26,20 @@
 use local_switchrolebanner\helper;
 
 /**
+ * after_require_login callback to save or switch to last role if required.
+ *
+ * @return void
+ */
+function local_switchrolebanner_after_require_login() : void {
+    helper::handle_role_switch();
+}
+
+/**
  * before_footer callback to add the banner to the page if conditions are correct.
  * 
  * @return string HTML the banner if conditions are correct or an empty string.
  */
-function local_switchrolebanner_before_footer() {
+function local_switchrolebanner_before_footer() : string {
     if (helper::should_show_banner()) {
         return helper::get_banner_html();
     }
