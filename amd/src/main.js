@@ -23,44 +23,75 @@
 
 define(
 [
-    'jquery'
+    'jquery',
+    'core/ajax',
+    'core/notification',
 ],
 function(
-    $
+    $,
+    ajax,
+    notification
 ) {
 
     /**
-     * Moves the banner to the top of the page.
-     *
-     * @param {object} banner The banner element.
+     * The banner element.
      */
-    var moveBanner = function(banner) {
+    var banner;
+
+    /**
+     * The course id.
+     */
+    var courseId;
+
+    /**
+     * Moves the banner to the top of the page.
+     */
+    var moveBanner = function() {
         var pageHeader = $('#page-header');
         banner.insertBefore(pageHeader);
     };
 
     /**
      * Closes the banner.
-     *
-     * @param {object} banner The banner element.
      */
-    var cloaseBanner = function(banner) {
+    var cloaseBanner = function() {
         banner.remove();
         document.body.classList.remove('local_switchrolebanner');
+    };
+
+    /**
+     * Hides the banner for the session.
+     */
+    var hideBanner = function() {
+        console.log(courseId);
+        var request = {
+                methodname: 'local_switchrolebanner_hide_banner',
+                args: {courseid: courseId}
+            },
+            promise = ajax.call([request])[0];
+        promise.then(function() {
+            cloaseBanner();
+            return promise;
+        }).catch(notification.exception);
     };
 
     /**
      * Initialise the banner.
      *
      * @param {object} root The root element for the banner.
+     * @param {int} course The id of the course.
      */
-    var init = function(root) {
-        var banner = $(root);
+    var init = function(root, course) {
+        banner = $(root);
+        courseId = course;
 
         document.body.classList.add('local_switchrolebanner');
-        moveBanner(banner);
+        moveBanner();
         banner.find('.close').on('click', function() {
-            cloaseBanner(banner);
+            cloaseBanner();
+        });
+        banner.find('#switchrolebanner-hide-banner').on('change', function() {
+            hideBanner();
         });
     };
 

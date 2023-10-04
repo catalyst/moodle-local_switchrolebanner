@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the version information for the switch roll banner plugin.
+ * This module adds external functions to the switch role banner.
  *
  * @package    local_switchrolebanner
  * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
@@ -23,8 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2023092603;              // Current version of the plugin (Date: YYYYMMDDXX).
-$plugin->requires  = 2022112805;              // Requires Moodle 4.1 and above.
-$plugin->component = 'local_switchrolebanner';
+$functions = array(
+    'local_switchrolebanner_hide_banner' => array(
+        'classname'     => 'local_switchrolebanner\external',
+        'methodname'    => 'hide_banner',
+        'classpath'     => '',
+        'description'   => 'Hides the banner a course.',
+        'type'          => 'write',
+        'ajax'          => true
+    ),
+);

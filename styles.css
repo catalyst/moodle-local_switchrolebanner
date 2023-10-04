@@ -5,3 +5,15 @@
 #switchrolebanner-banner .switchrolebanner-btncontainer {
     display: inline-block;
 }
+
+#switchrolebanner-banner label[data-fieldtype="checkbox"] {
+    display: inline-block;
+    padding-left: 1rem;
+    font-weight: 500;
+}
+
+#switchrolebanner-banner label[data-fieldtype="checkbox"]:hover,
+#switchrolebanner-banner label[data-fieldtype="checkbox"] input:hover {
+    cursor: pointer;
+    font-weight: 600;
+}

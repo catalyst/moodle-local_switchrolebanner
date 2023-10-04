@@ -76,6 +76,10 @@ class helper {
             return false;
         }
 
+        if (self::is_banner_hidden()) {
+            return false;
+        }
+
         if (!self::has_admin_role()) {
             return false;
         }
@@ -279,5 +283,40 @@ class helper {
             // For some reason this role doesn't meet our conditions, let's just reset the preference.
             self::set_user_last_role(0);
         }
+    }
+
+    /**
+     * Returns if the user has hidden the banner for this session.
+     *
+     * @return bool if the banner has been hidden
+     */
+    public static function is_banner_hidden() : bool {
+        global $SESSION, $COURSE;
+
+        if (!isset($SESSION->local_switchrolebanner_hide)) {
+            return false;
+        }
+
+        $hiddencourselist = json_decode($SESSION->local_switchrolebanner_hide);
+        return in_array($COURSE->id, $hiddencourselist);
+    }
+
+    /**
+     * Hides the banner for the remainder of the session.
+     *
+     * @param int $courseid the id of the course to hide the banner for
+     * @return void
+     */
+    public static function hide_banner($courseid) : void {
+        global $SESSION;
+
+        if (isset($SESSION->local_switchrolebanner_hide)) {
+            $hiddencourselist = json_decode($SESSION->local_switchrolebanner_hide);
+        } else {
+            $hiddencourselist = [];
+        }
+
+        $hiddencourselist[] = $courseid;
+        $SESSION->local_switchrolebanner_hide = json_encode($hiddencourselist);
     }
 }

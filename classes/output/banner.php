@@ -74,6 +74,7 @@ class banner implements renderable, templatable {
         }
 
         $data = [
+            'courseid' => $PAGE->course->id,
             'infomessage' => $infomessage,
             'buttons' => $buttonshtml
         ];

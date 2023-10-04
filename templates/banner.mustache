@@ -28,8 +28,14 @@
     <div class="switchrolebanner-info mb-2">
         {{{infomessage}}}
     </div>
-    <div class="switchrolebanner-buttons">
+    <div class="switchrolebanner-buttons mb-2">
         {{{buttons}}}
+    </div>
+    <div class="switchrolebanner-footer text-center">
+        <label data-fieldtype="checkbox" class="form-check mb-0">
+            <input type="checkbox" class="form-check-input" id="switchrolebanner-hide-banner">
+            Don't show this again for this session
+        </label>
     </div>
 </div>
 {{#js}}
@@ -43,6 +49,6 @@ function(
     Main
 ) {
     var root = $('#switchrolebanner-banner');
-    Main.init(root);
+    Main.init(root, {{courseid}});
 });
 {{/js}}
