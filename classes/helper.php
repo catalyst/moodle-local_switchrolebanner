@@ -27,8 +27,8 @@ namespace local_switchrolebanner;
 
 use context_course;
 use context_coursecat;
-use html_writer;
 use local_switchrolebanner\output\banner;
+use moodle_url;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -72,7 +72,7 @@ class helper {
     public static function should_show_banner() : bool {
         global $PAGE;
 
-        if ($PAGE->course->id == SITEID) {
+        if (self::is_excluded_page()) {
             return false;
         }
 
@@ -85,6 +85,9 @@ class helper {
         }
 
         if (empty(self::get_user_course_roles())) {
+            if (enrol_selfenrol_available($PAGE->course->id)) {
+                return true;
+            }
             return false;
         }
 
@@ -95,6 +98,27 @@ class helper {
         }
 
         return true;
+    }
+
+    /**
+     * Check if this page is excluded from showing the banner.
+     *
+     * @return bool if the page is excluded
+     */
+    public static function is_excluded_page() {
+        global $PAGE;
+
+        if ($PAGE->course->id == SITEID) {
+            return true;
+        }
+
+        if (in_array($PAGE->pagelayout, ['popup', 'embedded'])) {
+            return true;
+        }
+
+        if ($PAGE->url->compare(new moodle_url('/enrol/index.php'), URL_MATCH_BASE)) {
+            return true;
+        }
     }
 
     /**
