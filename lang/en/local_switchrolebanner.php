@@ -30,3 +30,6 @@ $string['pluginname'] = 'Switch role banner';
 $string['canselfenrol'] = 'You are currently viewing this course with your site or course category role but can enrol yourself in this course.';
 $string['viewingasadmin'] = 'You are currently viewing this course with your site or course category role.';
 $string['viewingasrole'] = 'You are currently viewing this course with your <b>{$a}</b> course role.';
+
+$string['privacy:metadata:preference:lastcourserole'] = 'Records the last role the user switched to in a course';
+$string['privacy:request:preference:lastcourserole'] = 'You last switched to the "{$a->rolename}" role for "{$a->coursename}"';
