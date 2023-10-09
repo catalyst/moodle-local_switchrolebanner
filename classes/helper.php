@@ -105,7 +105,7 @@ class helper {
      *
      * @return bool if the page is excluded
      */
-    public static function is_excluded_page() {
+    public static function is_excluded_page(): bool {
         global $PAGE;
 
         if ($PAGE->course->id == SITEID) {
@@ -119,6 +119,8 @@ class helper {
         if ($PAGE->url->compare(new moodle_url('/enrol/index.php'), URL_MATCH_BASE)) {
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -147,7 +149,7 @@ class helper {
     public static function get_user_switchable_course_roles() : array {
         global $USER, $COURSE;
 
-        if (!is_null(self::$switchablecourseroles)) {
+        if (!is_null(self::$switchablecourseroles) && !PHPUNIT_TEST) {
             return self::$switchablecourseroles;
         }
 
@@ -184,7 +186,7 @@ class helper {
     public static function get_user_course_roles() : array {
         global $USER, $COURSE;
 
-        if (!is_null(self::$courseroles)) {
+        if (!is_null(self::$courseroles) && !PHPUNIT_TEST) {
             return self::$courseroles;
         }
 
@@ -208,7 +210,7 @@ class helper {
     public static function get_user_switched_course_role() : int {
         global $USER, $COURSE;
 
-        if (!is_null(self::$switchedcourserole)) {
+        if (!is_null(self::$switchedcourserole) && !PHPUNIT_TEST) {
             return self::$switchedcourserole;
         }
 
