@@ -25,8 +25,6 @@
 
 namespace local_switchrolebanner\output;
 
-defined('MOODLE_INTERNAL') || die();
-
 use local_switchrolebanner\helper;
 use moodle_url;
 use renderable;
@@ -63,29 +61,34 @@ class banner implements renderable, templatable {
             $rolename = $rolenames[$switchedrole]->localname;
             $infomessage = get_string('viewingasrole', 'local_switchrolebanner', $rolename);
 
-            $url = new moodle_url('/course/switchrole.php', ['id' => $PAGE->course->id, 'switchrole' => 0, 'returnurl' => $PAGE->url]);
+            $url = new moodle_url('/course/switchrole.php',
+                    ['id' => $PAGE->course->id, 'switchrole' => 0, 'returnurl' => $PAGE->url]);
             $label = get_string('switchrolereturn');
-            $buttonshtml = $OUTPUT->container($OUTPUT->single_button($url, htmlspecialchars_decode($label, ENT_COMPAT)), $containerclasses);
+            $button = $OUTPUT->single_button($url, htmlspecialchars_decode($label, ENT_COMPAT));
+            $buttonshtml = $OUTPUT->container($button, $containerclasses);
         } else if (!empty($switchablecourseroles)) {
             $infomessage = get_string('viewingasadmin', 'local_switchrolebanner');
 
             $buttonshtml = $OUTPUT->container(get_string('switchroleto'), $containerclasses);
             foreach ($switchablecourseroles as $key => $role) {
-                $url = new moodle_url('/course/switchrole.php', ['id' => $PAGE->course->id, 'switchrole' => $key, 'returnurl' => $PAGE->url]);
-                $buttonshtml .= $OUTPUT->container($OUTPUT->single_button($url, htmlspecialchars_decode($role, ENT_COMPAT)), $containerclasses);
+                $url = new moodle_url('/course/switchrole.php',
+                        ['id' => $PAGE->course->id, 'switchrole' => $key, 'returnurl' => $PAGE->url]);
+                $button = $OUTPUT->single_button($url, htmlspecialchars_decode($role, ENT_COMPAT));
+                $buttonshtml .= $OUTPUT->container($button, $containerclasses);
             }
         } else if (enrol_selfenrol_available($PAGE->course->id)) {
             $infomessage = get_string('canselfenrol', 'local_switchrolebanner');
 
             $url = new moodle_url('/enrol/index.php', ['id' => $PAGE->course->id]);
             $label = get_string('enrolme', 'core_enrol');
-            $buttonshtml = $OUTPUT->container($OUTPUT->single_button($url, htmlspecialchars_decode($label, ENT_COMPAT)), $containerclasses);
+            $button = $OUTPUT->single_button($url, htmlspecialchars_decode($label, ENT_COMPAT));
+            $buttonshtml = $OUTPUT->container($button, $containerclasses);
         }
 
         $data = [
             'courseid' => $PAGE->course->id,
             'infomessage' => $infomessage,
-            'buttons' => $buttonshtml
+            'buttons' => $buttonshtml,
         ];
 
         return $data;

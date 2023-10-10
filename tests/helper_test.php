@@ -23,15 +23,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_switchrolebanner;
+
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
 
-use local_switchrolebanner\helper;
+use context_course;
+use context_system;
+use external_api;
 
 /**
  * Class helper_test.
+ * @coversDefaultClass \local_switchrolebanner\helper
+ * @coversDefaultClass \local_switchrolebanner\output\banner
  */
 class helper_test extends advanced_testcase {
     /**
@@ -72,6 +78,7 @@ class helper_test extends advanced_testcase {
 
     /**
      * Test that is_excluded_page returns correctly for given scenarios.
+     * @covers ::is_excluded_page
      */
     public function test_is_excluded_page() {
         global $PAGE;
@@ -113,6 +120,7 @@ class helper_test extends advanced_testcase {
 
     /**
      * Test that has_admin_role returns correctly for given scenarios.
+     * @covers ::has_admin_role
      */
     public function test_has_admin_role() {
         global $DB;
@@ -130,6 +138,7 @@ class helper_test extends advanced_testcase {
 
     /**
      * Test that get_user_switchable_course_roles returns correct roles.
+     * @covers ::get_user_switchable_course_roles
      */
     public function test_get_user_switchable_course_roles() {
         global $DB;
@@ -158,6 +167,7 @@ class helper_test extends advanced_testcase {
 
     /**
      * Test that get_user_course_roles returns correct roles.
+     * @covers ::get_user_course_roles
      */
     public function test_get_user_course_roles() {
         global $DB;
@@ -186,6 +196,7 @@ class helper_test extends advanced_testcase {
 
     /**
      * Test that get_user_switched_course_role returns correct role.
+     * @covers ::get_user_switched_course_role
      */
     public function test_get_user_switched_course_role() {
         global $DB;
@@ -205,6 +216,7 @@ class helper_test extends advanced_testcase {
     /**
      * Test that get_banner_html returns the expected HTML.
      * This essentially tests local_switchrolebanner\output\banner too.
+     * @covers ::get_banner_html
      */
     public function test_get_banner_html() {
         global $DB, $PAGE, $OUTPUT;
@@ -271,6 +283,9 @@ class helper_test extends advanced_testcase {
     /**
      * Test that handle_role_switch works.
      * This also tests set_user_last_role and get_user_last_role.
+     * @covers ::handle_role_switch
+     * @covers ::set_user_last_role
+     * @covers ::get_user_last_role
      */
     public function test_handle_role_switch() {
         global $DB;
@@ -324,6 +339,8 @@ class helper_test extends advanced_testcase {
     /**
      * Test that is_banner_hidden returns correctly.
      * This also tests hide_banner and local_switchrolebanner_hide_banner external function.
+     * @covers ::is_banner_hidden
+     * @covers ::hide_banner
      */
     public function test_is_banner_hidden() {
         global $PAGE;
@@ -367,6 +384,4 @@ class helper_test extends advanced_testcase {
         $PAGE->set_course($course3);
         $this->assertTrue(helper::is_banner_hidden());
     }
-
-    
 }

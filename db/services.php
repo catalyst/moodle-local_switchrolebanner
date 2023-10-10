@@ -23,13 +23,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$functions = array(
-    'local_switchrolebanner_hide_banner' => array(
+defined('MOODLE_INTERNAL') || die();
+
+$functions = [
+    'local_switchrolebanner_hide_banner' => [
         'classname'     => 'local_switchrolebanner\external',
         'methodname'    => 'hide_banner',
         'classpath'     => '',
         'description'   => 'Hides the banner a course.',
         'type'          => 'write',
-        'ajax'          => true
-    ),
-);
+        'ajax'          => true,
+    ],
+];

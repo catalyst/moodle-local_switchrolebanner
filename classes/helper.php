@@ -30,8 +30,6 @@ use context_coursecat;
 use local_switchrolebanner\output\banner;
 use moodle_url;
 
-defined('MOODLE_INTERNAL') || die;
-
 /**
  * Class helper.
  *

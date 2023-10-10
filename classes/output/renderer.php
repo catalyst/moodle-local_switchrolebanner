@@ -25,8 +25,6 @@
 
 namespace local_switchrolebanner\output;
 
-defined('MOODLE_INTERNAL') || die;
-
 use plugin_renderer_base;
 
 /**

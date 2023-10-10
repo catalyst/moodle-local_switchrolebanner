@@ -36,7 +36,7 @@ function local_switchrolebanner_after_require_login() : void {
 
 /**
  * before_footer callback to add the banner to the page if conditions are correct.
- * 
+ *
  * @return string HTML the banner if conditions are correct or an empty string.
  */
 function local_switchrolebanner_before_footer() : string {

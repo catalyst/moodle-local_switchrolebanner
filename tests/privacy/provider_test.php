@@ -25,8 +25,6 @@
 
 namespace local_switchrolebanner\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use core_privacy\tests\provider_testcase;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\transform;
@@ -40,6 +38,7 @@ use local_switchrolebanner\helper;
  * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
  * @copyright  2023 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @coversDefaultClass \local_switchrolebanner\privacy\provider
  */
 class provider_test extends provider_testcase {
 
@@ -53,6 +52,7 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that contexts are returned for a given user.
+     * @covers ::get_contexts_for_userid
      */
     public function test_get_contexts_for_userid() {
         global $DB, $PAGE;
@@ -86,6 +86,7 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that user IDs are returned for a given context.
+     * @covers ::get_users_in_context
      */
     public function test_get_users_in_context() {
         global $DB, $PAGE;
@@ -114,6 +115,7 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that data is deleted for a given user.
+     * @covers ::delete_data_for_user
      */
     public function test_delete_data_for_user() {
         global $DB, $PAGE;
@@ -140,30 +142,31 @@ class provider_test extends provider_testcase {
         $PAGE->set_course($c2);
         helper::set_user_last_role($studentrole->id);
 
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
 
         provider::delete_data_for_user(new approved_contextlist($u1, 'local_switchrolebanner',
                 [$c1ctx->id, $c2ctx->id]));
 
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
     }
 
     /**
      * Test that data is deleted for a given context.
+     * @covers ::delete_data_for_all_users_in_context
      */
     public function test_delete_data_for_all_users_in_context() {
         global $DB, $PAGE;
@@ -195,59 +198,60 @@ class provider_test extends provider_testcase {
         $PAGE->set_course($c2);
         helper::set_user_last_role($studentrole->id);
 
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
 
         // Nothing happens.
         provider::delete_data_for_all_users_in_context($c4ctx);
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
 
         // Delete for course 1.
         provider::delete_data_for_all_users_in_context($c1ctx);
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
 
         // Delete for course 2.
         provider::delete_data_for_all_users_in_context($c2ctx);
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
     }
 
     /**
      * Test the deletion of data related to a context and a list of users.
+     * @covers ::delete_data_for_users
      */
     public function test_delete_data_for_users() {
         global $DB, $PAGE;
@@ -267,12 +271,12 @@ class provider_test extends provider_testcase {
         $this->setUser($u3);
         helper::set_user_last_role($studentrole->id);
 
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u3->id,
-            'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u3->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
 
         $userlist = new \core_privacy\local\request\userlist($coursecotext, 'local_switchrolebanner');
         provider::get_users_in_context($userlist);
@@ -284,16 +288,17 @@ class provider_test extends provider_testcase {
         provider::delete_data_for_users($userlist);
 
         // Only user 2's preference is left.
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u1->id,
-            'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertTrue($DB->record_exists('user_preferences', ['userid' => $u2->id,
-            'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertFalse($DB->record_exists('user_preferences', ['userid' => $u3->id,
-            'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        $this->assertTrue($DB->record_exists('user_preferences',
+            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        $this->assertFalse($DB->record_exists('user_preferences',
+            ['userid' => $u3->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
     }
 
     /**
      * Test data is exported for a given user.
+     * @covers ::export_data_for_user
      */
     public function test_export_data_for_user() {
         global $DB, $PAGE;

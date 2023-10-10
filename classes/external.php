@@ -52,7 +52,7 @@ class external extends external_api {
     public static function hide_banner_parameters() {
         return new external_function_parameters(
                 [
-                    'courseid' => new external_value(PARAM_INT, 'Course code', VALUE_REQUIRED)
+                    'courseid' => new external_value(PARAM_INT, 'Course code', VALUE_REQUIRED),
                 ]
         );
     }
@@ -86,7 +86,7 @@ class external extends external_api {
      */
     public static function hide_banner_returns() {
         return new external_single_structure([
-            'result' => new external_value(PARAM_BOOL, 'If the banner was hidden')
+            'result' => new external_value(PARAM_BOOL, 'If the banner was hidden'),
         ]);
     }
 }

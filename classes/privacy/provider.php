@@ -25,8 +25,6 @@
 
 namespace local_switchrolebanner\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 use context;
 use core_privacy\local\request\writer;
 use core_privacy\local\metadata\collection;
@@ -183,7 +181,7 @@ class provider implements
                 $record->roleid,
                 get_string('privacy:request:preference:lastcourserole', 'local_switchrolebanner', (object) [
                     'rolename' => $rolenames[$record->roleid]->localname,
-                    'coursename' => $record->coursename
+                    'coursename' => $record->coursename,
                 ])
             );
         }
