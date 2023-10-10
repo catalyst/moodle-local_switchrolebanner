@@ -1,0 +1,17 @@
+# .github/workflows/moodle-release.yml
+name: Releasing in the Plugins directory
+
+on:
+  push:
+    branches:
+      - MOODLE_39_STABLE
+    paths:
+      - 'version.php'
+
+jobs:
+  release:
+    uses: catalyst/catalyst-moodle-workflows/.github/workflows/group-33-to-39-release.yml@main
+    with:
+      plugin_name: local_switchrolebanner
+    secrets:
+      moodle_org_token: ${{ secrets.MOODLE_ORG_TOKEN }}
