@@ -1,4 +1,4 @@
-Moodle Switch Role Banner
+Moodle Switch role banner
 ===================
 
 [![Codechecker CI](https://github.com/catalyst/moodle-local_switchrolebanner/actions/workflows/ci.yml/badge.svg)](https://github.com/catalyst/moodle-local_switchrolebanner/actions/workflows/ci.yml)
@@ -21,3 +21,10 @@ This Moodle plugin displays a banner above course pages to users who have site r
 
 - At any time the user can click on the "Don't show this again for this session" checkbox to hide the banner for the course for the remainder of their session.
 - This plugin remembers the last role the user switched to in each course (only applies to where banners would show) and will automatically switch them to that role on their next session.
+
+Branches
+-----------
+
+| Moodle version   | Branch                                                                                              | PHP  |
+|------------------|-----------------------------------------------------------------------------------------------------|------|
+| Moodle 3.9 +     | [MOODLE_39_STABLE](https://github.com/catalyst/moodle-local_switchrolebanner/tree/MOODLE_39_STABLE) | 7.4+ |
