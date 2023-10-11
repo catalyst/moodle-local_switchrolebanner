@@ -63,7 +63,6 @@ function(
      * Hides the banner for the session.
      */
     var hideBanner = function() {
-        console.log(courseId);
         var request = {
                 methodname: 'local_switchrolebanner_hide_banner',
                 args: {courseid: courseId}
