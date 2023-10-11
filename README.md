@@ -1,7 +1,7 @@
 Moodle Switch role banner
 ===================
 
-[![Codechecker CI](https://github.com/catalyst/moodle-local_switchrolebanner/actions/workflows/ci.yml/badge.svg)](https://github.com/catalyst/moodle-local_switchrolebanner/actions/workflows/ci.yml)
+[![Codechecker CI](https://github.com/catalyst/moodle-local_switchrolebanner/actions/workflows/ci.yml/badge.svg?branch=MOODLE_39_STABLE&label=ci)](https://github.com/catalyst/moodle-local_switchrolebanner/actions/workflows/ci.yml)
 
 Information
 -----------
