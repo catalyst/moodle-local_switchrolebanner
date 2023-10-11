@@ -49,6 +49,7 @@ function(
     Main
 ) {
     var root = $('#switchrolebanner-banner');
-    Main.init(root, {{courseid}});
+    var courseId = '{{courseid}}';
+    Main.init(root, courseId);
 });
 {{/js}}
