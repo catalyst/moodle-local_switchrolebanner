@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 $string['pluginname'] = 'Switch role banner';
 
 $string['canselfenrol'] = 'You are currently viewing this course with your site or course category role but can enrol yourself in this course.';
+$string['sessionhidebanner'] = 'Don\'t show this again for this session';
 $string['viewingasadmin'] = 'You are currently viewing this course with your site or course category role.';
 $string['viewingasrole'] = 'You are currently viewing this course with your <b>{$a}</b> course role.';
 
