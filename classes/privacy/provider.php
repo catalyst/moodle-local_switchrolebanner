@@ -159,7 +159,7 @@ class provider implements
         $sql = "
             SELECT c.id AS courseid,
                    c.fullname AS coursename,
-                   p.name AS key,
+                   p.name AS prefkey,
                    p.value AS roleid
               FROM {course} c
               JOIN {user_preferences} p
@@ -177,7 +177,7 @@ class provider implements
             $rolenames = role_get_names($context);
             writer::with_context($context)->export_user_preference(
                 'local_switchrolebanner',
-                $record->key,
+                $record->prefkey,
                 $record->roleid,
                 get_string('privacy:request:preference:lastcourserole', 'local_switchrolebanner', (object) [
                     'rolename' => $rolenames[$record->roleid]->localname,
