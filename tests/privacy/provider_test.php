@@ -46,8 +46,21 @@ class provider_test extends provider_testcase {
      * Setup function.
      */
     public function setUp(): void {
+        global $DB;
+
         parent::setUp();
         $this->resetAfterTest();
+
+        $dg = $this->getDataGenerator();
+        $this->c1 = $dg->create_course();
+        $this->c2 = $dg->create_course();
+        $this->c3 = $dg->create_course();
+        $this->u1 = $dg->create_user();
+        $this->u2 = $dg->create_user();
+        $this->c1ctx = \context_course::instance($this->c1->id);
+        $this->c2ctx = \context_course::instance($this->c2->id);
+        $this->c3ctx = \context_course::instance($this->c3->id);
+        $this->studentrole = $DB->get_record('role', ['shortname' => 'student']);
     }
 
     /**
@@ -57,31 +70,22 @@ class provider_test extends provider_testcase {
     public function test_get_contexts_for_userid() {
         global $DB, $PAGE;
 
-        $dg = $this->getDataGenerator();
-        $c1 = $dg->create_course();
-        $c2 = $dg->create_course();
-        $u1 = $dg->create_user();
-        $u2 = $dg->create_user();
-        $c1ctx = \context_course::instance($c1->id);
-        $c2ctx = \context_course::instance($c2->id);
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $this->setUser($this->u1);
+        $PAGE->set_course($this->c1);
+        helper::set_user_last_role($this->studentrole->id);
+        $PAGE->set_course($this->c2);
+        helper::set_user_last_role($this->studentrole->id);
+        $this->setUser($this->u2);
+        helper::set_user_last_role($this->studentrole->id);
 
-        $this->setUser($u1);
-        $PAGE->set_course($c1);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u2);
-        helper::set_user_last_role($studentrole->id);
-
-        $contextids = provider::get_contexts_for_userid($u1->id)->get_contextids();
+        $contextids = provider::get_contexts_for_userid($this->u1->id)->get_contextids();
         $this->assertCount(2, $contextids);
-        $this->assertTrue(in_array($c1ctx->id, $contextids));
-        $this->assertTrue(in_array($c2ctx->id, $contextids));
+        $this->assertTrue(in_array($this->c1ctx->id, $contextids));
+        $this->assertTrue(in_array($this->c2ctx->id, $contextids));
 
-        $contextids = provider::get_contexts_for_userid($u2->id)->get_contextids();
+        $contextids = provider::get_contexts_for_userid($this->u2->id)->get_contextids();
         $this->assertCount(1, $contextids);
-        $this->assertTrue(in_array($c2ctx->id, $contextids));
+        $this->assertTrue(in_array($this->c2ctx->id, $contextids));
     }
 
     /**
@@ -91,24 +95,18 @@ class provider_test extends provider_testcase {
     public function test_get_users_in_context() {
         global $DB, $PAGE;
 
-        $u1 = $this->getDataGenerator()->create_user();
-        $u2 = $this->getDataGenerator()->create_user();
         $u3 = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $coursecotext = \context_course::instance($course->id);
 
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $PAGE->set_course($this->c1);
 
-        $PAGE->set_course($course);
-
-        $this->setUser($u1);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u2);
-        helper::set_user_last_role($studentrole->id);
+        $this->setUser($this->u1);
+        helper::set_user_last_role($this->studentrole->id);
+        $this->setUser($this->u2);
+        helper::set_user_last_role($this->studentrole->id);
         $this->setUser($u3);
-        helper::set_user_last_role($studentrole->id);
+        helper::set_user_last_role($this->studentrole->id);
 
-        $userlist = new \core_privacy\local\request\userlist($coursecotext, 'local_switchrolebanner');
+        $userlist = new \core_privacy\local\request\userlist($this->c1ctx, 'local_switchrolebanner');
         provider::get_users_in_context($userlist);
         $this->assertCount(3, $userlist->get_userids());
     }
@@ -120,48 +118,22 @@ class provider_test extends provider_testcase {
     public function test_delete_data_for_user() {
         global $DB, $PAGE;
 
-        $dg = $this->getDataGenerator();
-        $c1 = $dg->create_course();
-        $c2 = $dg->create_course();
-        $c3 = $dg->create_course();
-        $u1 = $dg->create_user();
-        $u2 = $dg->create_user();
-        $c1ctx = \context_course::instance($c1->id);
-        $c2ctx = \context_course::instance($c2->id);
-        $c3ctx = \context_course::instance($c3->id);
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
+        $usercourses = [
+            $this->u1->id => [$this->c1, $this->c2, $this->c3],
+            $this->u2->id => [$this->c2]
+        ];
+        $this->setPrefs($usercourses);
+        $this->assertPrefExists($usercourses);
 
-        $this->setUser($u1);
-        $PAGE->set_course($c1);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c3);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u2);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-
-        provider::delete_data_for_user(new approved_contextlist($u1, 'local_switchrolebanner',
-                [$c1ctx->id, $c2ctx->id]));
-
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        provider::delete_data_for_user(new approved_contextlist($this->u1, 'local_switchrolebanner',
+                [$this->c1ctx->id, $this->c2ctx->id]));
+        $usercourses = [$this->u1->id => [$this->c1, $this->c2]];
+        $this->assertPrefNotExists($usercourses);
+        $usercourses = [
+            $this->u1->id => [$this->c3],
+            $this->u2->id => [$this->c2],
+        ];
+        $this->assertPrefExists($usercourses);
     }
 
     /**
@@ -172,81 +144,39 @@ class provider_test extends provider_testcase {
         global $DB, $PAGE;
 
         $dg = $this->getDataGenerator();
-        $c1 = $dg->create_course();
-        $c2 = $dg->create_course();
-        $c2 = $dg->create_course();
-        $c3 = $dg->create_course();
         $c4 = $dg->create_course();
-        $u1 = $dg->create_user();
-        $u2 = $dg->create_user();
-        $c1ctx = \context_course::instance($c1->id);
-        $c2ctx = \context_course::instance($c2->id);
-        $c3ctx = \context_course::instance($c3->id);
         $c4ctx = \context_course::instance($c4->id);
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
 
-        $this->setUser($u1);
-        $PAGE->set_course($c1);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c3);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u2);
-        $PAGE->set_course($c1);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $usercourses = [
+            $this->u1->id => [$this->c1, $this->c2, $this->c3],
+            $this->u2->id => [$this->c1, $this->c2]
+        ];
+        $this->setPrefs($usercourses);
+        $this->assertPrefExists($usercourses);
 
         // Nothing happens.
         provider::delete_data_for_all_users_in_context($c4ctx);
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        $this->assertPrefExists($usercourses);
 
         // Delete for course 1.
-        provider::delete_data_for_all_users_in_context($c1ctx);
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        provider::delete_data_for_all_users_in_context($this->c1ctx);
+        unset($usercourses[$this->u1->id][0]);
+        unset($usercourses[$this->u2->id][0]);
+        $this->assertPrefExists($usercourses);
+        $usercoursesdeleted = [
+            $this->u1->id => [$this->c1],
+            $this->u2->id => [$this->c1],
+        ];
+        $this->assertPrefNotExists($usercoursesdeleted);
 
         // Delete for course 2.
-        provider::delete_data_for_all_users_in_context($c2ctx);
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $c3->id]));
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c1->id]));
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $c2->id]));
+        provider::delete_data_for_all_users_in_context($this->c2ctx);
+        $this->assertPrefExists([$this->u1->id => [$this->c3]]);
+        $usercoursesdeleted = [
+            $this->u1->id => [$this->c1, $this->c2],
+            $this->u2->id => [$this->c1, $this->c2],
+        ];
+        $this->assertPrefNotExists($usercoursesdeleted);
     }
 
     /**
@@ -256,44 +186,29 @@ class provider_test extends provider_testcase {
     public function test_delete_data_for_users() {
         global $DB, $PAGE;
 
-        $u1 = $this->getDataGenerator()->create_user();
-        $u2 = $this->getDataGenerator()->create_user();
         $u3 = $this->getDataGenerator()->create_user();
-        $course = $this->getDataGenerator()->create_course();
-        $coursecotext = \context_course::instance($course->id);
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
 
-        $PAGE->set_course($course);
-        $this->setUser($u1);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u2);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u3);
-        helper::set_user_last_role($studentrole->id);
+        $usercourses = [
+            $this->u1->id => [$this->c1],
+            $this->u2->id => [$this->c1],
+            $u3->id => [$this->c1],
+        ];
+        $this->setPrefs($usercourses);
+        $this->assertPrefExists($usercourses);
 
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u3->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
-
-        $userlist = new \core_privacy\local\request\userlist($coursecotext, 'local_switchrolebanner');
+        $userlist = new \core_privacy\local\request\userlist($this->c1ctx, 'local_switchrolebanner');
         provider::get_users_in_context($userlist);
         $this->assertCount(3, $userlist->get_userids());
 
         // Delete preferences for user 1 and 3 for course.
-        $userlist = new \core_privacy\local\request\approved_userlist($coursecotext, 'local_switchrolebanner',
-                [$u1->id, $u3->id]);
+        $userlist = new \core_privacy\local\request\approved_userlist($this->c1ctx, 'local_switchrolebanner',
+                [$this->u1->id, $u3->id]);
         provider::delete_data_for_users($userlist);
 
         // Only user 2's preference is left.
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u1->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertTrue($DB->record_exists('user_preferences',
-            ['userid' => $u2->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
-        $this->assertFalse($DB->record_exists('user_preferences',
-            ['userid' => $u3->id, 'name' => helper::LAST_COURSE_ROLE . $course->id]));
+        unset($usercourses[$this->u2->id]);
+        $this->assertPrefNotExists($usercourses);
+        $this->assertPrefExists([$this->u2->id => [$this->c1]]);
     }
 
     /**
@@ -303,42 +218,68 @@ class provider_test extends provider_testcase {
     public function test_export_data_for_user() {
         global $DB, $PAGE;
 
-        $dg = $this->getDataGenerator();
-        $c1 = $dg->create_course();
-        $c2 = $dg->create_course();
-        $c3 = $dg->create_course();
-        $u1 = $dg->create_user();
-        $u2 = $dg->create_user();
-        $c1ctx = \context_course::instance($c1->id);
-        $c2ctx = \context_course::instance($c2->id);
-        $c3ctx = \context_course::instance($c3->id);
-        $studentrole = $DB->get_record('role', ['shortname' => 'student']);
-
-        $this->setUser($u1);
-        $PAGE->set_course($c1);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-        $this->setUser($u2);
-        $PAGE->set_course($c1);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c2);
-        helper::set_user_last_role($studentrole->id);
-        $PAGE->set_course($c3);
-        helper::set_user_last_role($studentrole->id);
+        $usercourses = [
+            $this->u1->id => [$this->c1, $this->c2],
+            $this->u2->id => [$this->c1, $this->c2, $this->c3],
+        ];
+        $this->setPrefs($usercourses);
 
         // Export data.
-        provider::export_user_data(new approved_contextlist($u1, 'local_switchrolebanner',
-            [$c1ctx->id, $c2ctx->id, $c3ctx->id]));
-        $prefs = writer::with_context($c3ctx)->get_user_context_preferences('local_switchrolebanner');
+        provider::export_user_data(new approved_contextlist($this->u1, 'local_switchrolebanner',
+            [$this->c1ctx->id, $this->c2ctx->id, $this->c3ctx->id]));
+        $prefs = writer::with_context($this->c3ctx)->get_user_context_preferences('local_switchrolebanner');
         $this->assertEmpty((array) $prefs);
 
-        $prefs = writer::with_context($c1ctx)->get_user_context_preferences('local_switchrolebanner');
-        $key = helper::LAST_COURSE_ROLE . $c1->id;
-        $this->assertEquals($studentrole->id, $prefs->$key->value);
+        $prefs = writer::with_context($this->c1ctx)->get_user_context_preferences('local_switchrolebanner');
+        $key = helper::LAST_COURSE_ROLE . $this->c1->id;
+        $this->assertEquals($this->studentrole->id, $prefs->$key->value);
 
-        $prefs = writer::with_context($c2ctx)->get_user_context_preferences('local_switchrolebanner');
-        $key = helper::LAST_COURSE_ROLE . $c2->id;
-        $this->assertEquals($studentrole->id, $prefs->$key->value);
+        $prefs = writer::with_context($this->c2ctx)->get_user_context_preferences('local_switchrolebanner');
+        $key = helper::LAST_COURSE_ROLE . $this->c2->id;
+        $this->assertEquals($this->studentrole->id, $prefs->$key->value);
+    }
+
+    /**
+     * Sets the preferences for an array of users and courses.
+     * @param array $usercourses an array of userid key and courses that the preference needs to be set for
+     */
+    private function setPrefs($usercourses) {
+        global $PAGE;
+
+        foreach($usercourses as $userid => $courses) {
+            $this->setUser($userid);
+            foreach ($courses as $course) {
+                $PAGE->set_course($course);
+                helper::set_user_last_role($this->studentrole->id);
+            }
+        }
+    }
+
+    /**
+     * Asserts the prefence exists for an array of users and courses.
+     * @param array $usercourses an array of userid key and courses that the preference should exist for
+     * @param bool $not if we are testing for not exists
+     */
+    private function assertPrefExists($usercourses, $not = false) {
+        global $DB;
+
+        foreach ($usercourses as $userid => $courses) {
+            foreach ($courses as $course) {
+                $params = ['userid' => $userid, 'name' => helper::LAST_COURSE_ROLE . $course->id];
+                if ($not) {
+                    $this->assertFalse($DB->record_exists('user_preferences', $params));
+                } else {
+                    $this->assertTrue($DB->record_exists('user_preferences', $params));
+                }
+            }
+        }
+    }
+
+    /**
+     * Asserts the prefence does not exists for an array of users and courses.
+     * @param array $usercourses an array of userid key and courses that the preference should exist for
+     */
+    private function assertPrefNotExists($usercourses) {
+        $this->assertPrefExists($usercourses, true);
     }
 }
