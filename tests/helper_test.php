@@ -39,7 +39,7 @@ use external_api;
  * @coversDefaultClass \local_switchrolebanner\helper
  * @coversDefaultClass \local_switchrolebanner\output\banner
  */
-class helper_test extends advanced_testcase {
+class helper_test extends \advanced_testcase {
     /**
      * Test course instance.
      *
