@@ -120,20 +120,20 @@ class provider_test extends provider_testcase {
 
         $usercourses = [
             $this->u1->id => [$this->c1, $this->c2, $this->c3],
-            $this->u2->id => [$this->c2]
+            $this->u2->id => [$this->c2],
         ];
-        $this->setPrefs($usercourses);
-        $this->assertPrefExists($usercourses);
+        $this->setprefs($usercourses);
+        $this->assertprefexists($usercourses);
 
         provider::delete_data_for_user(new approved_contextlist($this->u1, 'local_switchrolebanner',
                 [$this->c1ctx->id, $this->c2ctx->id]));
         $usercourses = [$this->u1->id => [$this->c1, $this->c2]];
-        $this->assertPrefNotExists($usercourses);
+        $this->assertprefnotexists($usercourses);
         $usercourses = [
             $this->u1->id => [$this->c3],
             $this->u2->id => [$this->c2],
         ];
-        $this->assertPrefExists($usercourses);
+        $this->assertprefexists($usercourses);
     }
 
     /**
@@ -149,34 +149,34 @@ class provider_test extends provider_testcase {
 
         $usercourses = [
             $this->u1->id => [$this->c1, $this->c2, $this->c3],
-            $this->u2->id => [$this->c1, $this->c2]
+            $this->u2->id => [$this->c1, $this->c2],
         ];
-        $this->setPrefs($usercourses);
-        $this->assertPrefExists($usercourses);
+        $this->setprefs($usercourses);
+        $this->assertprefexists($usercourses);
 
         // Nothing happens.
         provider::delete_data_for_all_users_in_context($c4ctx);
-        $this->assertPrefExists($usercourses);
+        $this->assertprefexists($usercourses);
 
         // Delete for course 1.
         provider::delete_data_for_all_users_in_context($this->c1ctx);
         unset($usercourses[$this->u1->id][0]);
         unset($usercourses[$this->u2->id][0]);
-        $this->assertPrefExists($usercourses);
+        $this->assertprefexists($usercourses);
         $usercoursesdeleted = [
             $this->u1->id => [$this->c1],
             $this->u2->id => [$this->c1],
         ];
-        $this->assertPrefNotExists($usercoursesdeleted);
+        $this->assertprefnotexists($usercoursesdeleted);
 
         // Delete for course 2.
         provider::delete_data_for_all_users_in_context($this->c2ctx);
-        $this->assertPrefExists([$this->u1->id => [$this->c3]]);
+        $this->assertprefexists([$this->u1->id => [$this->c3]]);
         $usercoursesdeleted = [
             $this->u1->id => [$this->c1, $this->c2],
             $this->u2->id => [$this->c1, $this->c2],
         ];
-        $this->assertPrefNotExists($usercoursesdeleted);
+        $this->assertprefnotexists($usercoursesdeleted);
     }
 
     /**
@@ -193,8 +193,8 @@ class provider_test extends provider_testcase {
             $this->u2->id => [$this->c1],
             $u3->id => [$this->c1],
         ];
-        $this->setPrefs($usercourses);
-        $this->assertPrefExists($usercourses);
+        $this->setprefs($usercourses);
+        $this->assertprefexists($usercourses);
 
         $userlist = new \core_privacy\local\request\userlist($this->c1ctx, 'local_switchrolebanner');
         provider::get_users_in_context($userlist);
@@ -207,8 +207,8 @@ class provider_test extends provider_testcase {
 
         // Only user 2's preference is left.
         unset($usercourses[$this->u2->id]);
-        $this->assertPrefNotExists($usercourses);
-        $this->assertPrefExists([$this->u2->id => [$this->c1]]);
+        $this->assertprefnotexists($usercourses);
+        $this->assertprefexists([$this->u2->id => [$this->c1]]);
     }
 
     /**
@@ -222,7 +222,7 @@ class provider_test extends provider_testcase {
             $this->u1->id => [$this->c1, $this->c2],
             $this->u2->id => [$this->c1, $this->c2, $this->c3],
         ];
-        $this->setPrefs($usercourses);
+        $this->setprefs($usercourses);
 
         // Export data.
         provider::export_user_data(new approved_contextlist($this->u1, 'local_switchrolebanner',
@@ -243,10 +243,10 @@ class provider_test extends provider_testcase {
      * Sets the preferences for an array of users and courses.
      * @param array $usercourses an array of userid key and courses that the preference needs to be set for
      */
-    private function setPrefs($usercourses) {
+    private function setprefs($usercourses) {
         global $PAGE;
 
-        foreach($usercourses as $userid => $courses) {
+        foreach ($usercourses as $userid => $courses) {
             $this->setUser($userid);
             foreach ($courses as $course) {
                 $PAGE->set_course($course);
@@ -260,7 +260,7 @@ class provider_test extends provider_testcase {
      * @param array $usercourses an array of userid key and courses that the preference should exist for
      * @param bool $not if we are testing for not exists
      */
-    private function assertPrefExists($usercourses, $not = false) {
+    private function assertprefexists($usercourses, $not = false) {
         global $DB;
 
         foreach ($usercourses as $userid => $courses) {
@@ -279,7 +279,7 @@ class provider_test extends provider_testcase {
      * Asserts the prefence does not exists for an array of users and courses.
      * @param array $usercourses an array of userid key and courses that the preference should exist for
      */
-    private function assertPrefNotExists($usercourses) {
-        $this->assertPrefExists($usercourses, true);
+    private function assertprefnotexists($usercourses) {
+        $this->assertprefexists($usercourses, true);
     }
 }
