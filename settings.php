@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the version information for the switch roll banner plugin.
+ * Plugin administration.
  *
  * @package    local_switchrolebanner
  * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
@@ -25,6 +25,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2023120801;              // Current version of the plugin (Date: YYYYMMDDXX).
-$plugin->requires  = 2020061524;              // Requires Moodle 3.9 and above.
-$plugin->component = 'local_switchrolebanner';
+if (is_siteadmin()) {
+
+    $settings = new admin_settingpage('local_switchrolebanner', get_string('pluginname', 'local_switchrolebanner'));
+    $ADMIN->add('localplugins', $settings);
+
+    $name = 'local_switchrolebanner/enabled';
+    $title = get_string('enabled', 'local_switchrolebanner');
+    $description = get_string('enabled_desc', 'local_switchrolebanner');
+    $setting = new admin_setting_configcheckbox($name, $title, $description, 0);
+    $settings->add($setting);
+}

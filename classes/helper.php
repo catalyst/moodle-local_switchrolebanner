@@ -70,6 +70,10 @@ class helper {
     public static function should_show_banner() : bool {
         global $PAGE;
 
+        if (!self::is_enabled()) {
+            return false;
+        }
+
         if (self::is_excluded_page()) {
             return false;
         }
@@ -96,6 +100,15 @@ class helper {
         }
 
         return true;
+    }
+
+    /**
+     * Check if the plugin is enabled.
+     *
+     * @return bool if the plugin is enabled
+     */
+    public static function is_enabled(): bool {
+        return get_config('local_switchrolebanner', 'enabled');
     }
 
     /**
@@ -279,6 +292,10 @@ class helper {
      */
     public static function handle_role_switch() : void {
         global $COURSE;
+
+        if (!self::is_enabled()) {
+            return;
+        }
 
         if ($COURSE->id == SITEID) {
             return;

@@ -63,6 +63,8 @@ class helper_test extends \advanced_testcase {
         parent::setUp();
         $this->resetAfterTest();
 
+        set_config('enabled', 1, 'local_switchrolebanner');
+
         $dg = $this->getDataGenerator();
         $this->course = $dg->create_course();
         $this->user = $dg->create_user();
@@ -74,6 +76,21 @@ class helper_test extends \advanced_testcase {
         $PAGE->set_course($this->course);
         $PAGE->set_url('/course/view.php', ['id' => $this->course->id]);
         $this->setUser($this->user);
+    }
+
+    /**
+     * Test that is_enabled returns correctly.
+     * @covers ::is_enabled
+     */
+    public function test_is_enabled() {
+        // Should be enabled automatically because of setUp().
+        $this->assertTrue(helper::is_enabled());
+        $this->assertTrue(helper::should_show_banner());
+
+        // Disable the plugin and test.
+        set_config('enabled', 0, 'local_switchrolebanner');
+        $this->assertFalse(helper::is_enabled());
+        $this->assertFalse(helper::should_show_banner());
     }
 
     /**
