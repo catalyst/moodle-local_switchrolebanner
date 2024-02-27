@@ -25,6 +25,7 @@ This Moodle plugin displays a banner above course pages to users who have site r
 Branches
 -----------
 
-| Moodle version   | Branch                                                                                              | PHP  |
-|------------------|-----------------------------------------------------------------------------------------------------|------|
-| Moodle 3.9 +     | [MOODLE_39_STABLE](https://github.com/catalyst/moodle-local_switchrolebanner/tree/MOODLE_39_STABLE) | 7.4+ |
+| Moodle version          | Branch                                                                                                | PHP  |
+|-------------------------|-------------------------------------------------------------------------------------------------------|------|
+| Moodle 4.2 +            | [MOODLE_402_STABLE](https://github.com/catalyst/moodle-local_switchrolebanner/tree/MOODLE_402_STABLE) | 8.0+ |
+| Moodle 3.9 - Moodle 4.1 | [MOODLE_39_STABLE](https://github.com/catalyst/moodle-local_switchrolebanner/tree/MOODLE_39_STABLE)   | 7.4+ |

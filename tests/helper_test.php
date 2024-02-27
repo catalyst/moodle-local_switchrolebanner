@@ -28,11 +28,10 @@ namespace local_switchrolebanner;
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
-require_once($CFG->libdir . '/externallib.php');
 
 use context_course;
 use context_system;
-use external_api;
+use core_external\external_api;
 
 /**
  * Class helper_test.
