@@ -15,21 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Lib functions.
+ * Hook callbacks for Switch role banner.
  *
  * @package    local_switchrolebanner
- * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
- * @copyright  2023 Catalyst IT
+ * @author     Scott Verbeek <scottverbeek@catalyst-au.net>
+ * @copyright  2025 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use local_switchrolebanner\helper;
+defined('MOODLE_INTERNAL') || die();
 
-/**
- * after_require_login callback to save or switch to last role if required.
- *
- * @return void
- */
-function local_switchrolebanner_after_require_login() : void {
-    helper::handle_role_switch();
-}
+$callbacks = [
+    [
+        'hook' => \core\hook\output\before_footer_html_generation::class,
+        'callback' => \local_switchrolebanner\hook_callbacks::class . '::before_footer_html_generation',
+        'priority' => 0,
+    ],
+];

@@ -25,21 +25,24 @@
 
 namespace local_switchrolebanner;
 
-defined('MOODLE_INTERNAL') || die;
-
-global $CFG;
-require_once($CFG->libdir . '/externallib.php');
-
 use context_course;
 use context_system;
-use external_api;
+use core_external\external_api;
+use externallib_advanced_testcase;
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+
+require_once($CFG->dirroot . '/webservice/tests/helpers.php');
+
 
 /**
  * Class helper_test.
  * @coversDefaultClass \local_switchrolebanner\helper
  * @coversDefaultClass \local_switchrolebanner\output\banner
  */
-class helper_test extends \advanced_testcase {
+class helper_test extends externallib_advanced_testcase {
     /**
      * Test course instance.
      *
@@ -356,6 +359,7 @@ class helper_test extends \advanced_testcase {
     /**
      * Test that is_banner_hidden returns correctly.
      * This also tests hide_banner and local_switchrolebanner_hide_banner external function.
+     * @runInSeparateProcess
      * @covers ::is_banner_hidden
      * @covers ::hide_banner
      */
