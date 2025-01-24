@@ -5,6 +5,7 @@ Moodle Switch role banner
 
 Information
 -----------
+![image](https://github.com/user-attachments/assets/c3447ca8-09ce-4199-b05c-ee35aacc6431)
 
 This Moodle plugin displays a banner above course pages to users who have site roles that allow them to view courses and have roles in that course or can self enrol.
 
