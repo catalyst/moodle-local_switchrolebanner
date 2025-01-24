@@ -42,6 +42,29 @@ use local_switchrolebanner\helper;
  */
 class provider_test extends provider_testcase {
 
+    /** @var stdClass a course object. */
+    private $c1;
+    /** @var stdClass a course object. */
+    private $c2;
+    /** @var stdClass a course object. */
+    private $c3;
+
+    /** @var stdClass a user object. */
+    private $u1;
+    /** @var stdClass a user object. */
+    private $u2;
+
+    /** @var stdClass a course context object. */
+    private $c1ctx;
+    /** @var stdClass a course context object. */
+    private $c2ctx;
+    /** @var stdClass a course context object. */
+    private $c3ctx;
+
+    /** @var stdClass a student role record. */
+    private $studentrole;
+
+
     /**
      * Setup function.
      */
