@@ -86,7 +86,7 @@ function(
 
         document.body.classList.add('local_switchrolebanner');
         moveBanner();
-        banner.find('.close').on('click', function() {
+        banner.find('.btn-close').on('click', function() {
             cloaseBanner();
         });
         banner.find('#switchrolebanner-hide-banner').on('change', function() {

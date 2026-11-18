@@ -25,14 +25,13 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['pluginname'] = 'Switch role banner';
-
 $string['canselfenrol'] = 'You are currently viewing this course with your site or course category role but can enrol yourself in this course.';
 $string['enabled'] = 'Enabled';
 $string['enabled_desc'] = 'If the plugin is enabled';
-$string['sessionhidebanner'] = 'Don\'t show this again for this session';
-$string['viewingasadmin'] = 'You are currently viewing this course with your site or course category role.';
-$string['viewingasrole'] = 'You are currently viewing this course with your <b>{$a}</b> course role.';
+$string['pluginname'] = 'Switch role banner';
 
 $string['privacy:metadata:preference:lastcourserole'] = 'Records the last role the user switched to in a course';
 $string['privacy:request:preference:lastcourserole'] = 'You last switched to the "{$a->rolename}" role for "{$a->coursename}"';
+$string['sessionhidebanner'] = 'Don\'t show this again for this session';
+$string['viewingasadmin'] = 'You are currently viewing this course with your site or course category role.';
+$string['viewingasrole'] = 'You are currently viewing this course with your <b>{$a}</b> course role.';

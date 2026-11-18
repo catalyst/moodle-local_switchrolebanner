@@ -30,6 +30,6 @@ use local_switchrolebanner\helper;
  *
  * @return void
  */
-function local_switchrolebanner_after_require_login() : void {
+function local_switchrolebanner_after_require_login(): void {
     helper::handle_role_switch();
 }

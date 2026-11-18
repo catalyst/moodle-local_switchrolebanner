@@ -29,6 +29,7 @@ use context_course;
 use context_system;
 use core_external\external_api;
 use externallib_advanced_testcase;
+use local_switchrolebanner\output\banner;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,10 +40,10 @@ require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
 /**
  * Class helper_test.
- * @coversDefaultClass \local_switchrolebanner\helper
- * @coversDefaultClass \local_switchrolebanner\output\banner
  */
-class helper_test extends externallib_advanced_testcase {
+#[\PHPUnit\Framework\Attributes\CoversClass(helper::class)]
+#[\PHPUnit\Framework\Attributes\CoversClass(banner::class)]
+final class helper_test extends externallib_advanced_testcase {
     /**
      * Test course instance.
      *
@@ -83,9 +84,8 @@ class helper_test extends externallib_advanced_testcase {
 
     /**
      * Test that is_enabled returns correctly.
-     * @covers ::is_enabled
      */
-    public function test_is_enabled() {
+    public function test_is_enabled(): void {
         // Should be enabled automatically because of setUp().
         $this->assertTrue(helper::is_enabled());
         $this->assertTrue(helper::should_show_banner());
@@ -98,9 +98,8 @@ class helper_test extends externallib_advanced_testcase {
 
     /**
      * Test that is_excluded_page returns correctly for given scenarios.
-     * @covers ::is_excluded_page
      */
-    public function test_is_excluded_page() {
+    public function test_is_excluded_page(): void {
         global $PAGE;
 
         // We are on a course view page.
@@ -140,9 +139,8 @@ class helper_test extends externallib_advanced_testcase {
 
     /**
      * Test that has_admin_role returns correctly for given scenarios.
-     * @covers ::has_admin_role
      */
-    public function test_has_admin_role() {
+    public function test_has_admin_role(): void {
         global $DB;
 
         // User has sitewide role.
@@ -158,9 +156,8 @@ class helper_test extends externallib_advanced_testcase {
 
     /**
      * Test that get_user_switchable_course_roles returns correct roles.
-     * @covers ::get_user_switchable_course_roles
      */
-    public function test_get_user_switchable_course_roles() {
+    public function test_get_user_switchable_course_roles(): void {
         global $DB;
 
         $dg = $this->getDataGenerator();
@@ -187,9 +184,8 @@ class helper_test extends externallib_advanced_testcase {
 
     /**
      * Test that get_user_course_roles returns correct roles.
-     * @covers ::get_user_course_roles
      */
-    public function test_get_user_course_roles() {
+    public function test_get_user_course_roles(): void {
         global $DB;
 
         $dg = $this->getDataGenerator();
@@ -216,9 +212,8 @@ class helper_test extends externallib_advanced_testcase {
 
     /**
      * Test that get_user_switched_course_role returns correct role.
-     * @covers ::get_user_switched_course_role
      */
-    public function test_get_user_switched_course_role() {
+    public function test_get_user_switched_course_role(): void {
         global $DB;
 
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
@@ -236,9 +231,8 @@ class helper_test extends externallib_advanced_testcase {
     /**
      * Test that get_banner_html returns the expected HTML.
      * This essentially tests local_switchrolebanner\output\banner too.
-     * @covers ::get_banner_html
      */
-    public function test_get_banner_html() {
+    public function test_get_banner_html(): void {
         global $DB, $PAGE, $OUTPUT;
 
         $dg = $this->getDataGenerator();
@@ -303,11 +297,8 @@ class helper_test extends externallib_advanced_testcase {
     /**
      * Test that handle_role_switch works.
      * This also tests set_user_last_role and get_user_last_role.
-     * @covers ::handle_role_switch
-     * @covers ::set_user_last_role
-     * @covers ::get_user_last_role
      */
-    public function test_handle_role_switch() {
+    public function test_handle_role_switch(): void {
         global $DB;
 
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
@@ -359,11 +350,9 @@ class helper_test extends externallib_advanced_testcase {
     /**
      * Test that is_banner_hidden returns correctly.
      * This also tests hide_banner and local_switchrolebanner_hide_banner external function.
-     * @runInSeparateProcess
-     * @covers ::is_banner_hidden
-     * @covers ::hide_banner
      */
-    public function test_is_banner_hidden() {
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    public function test_is_banner_hidden(): void {
         global $PAGE;
 
         $dg = $this->getDataGenerator();

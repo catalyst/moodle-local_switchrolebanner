@@ -44,17 +44,16 @@ use local_switchrolebanner\helper;
  */
 class provider implements
     \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\subsystem\provider,
-    \core_privacy\local\request\user_preference_provider,
-    \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\request\user_preference_provider {
     /**
      * Returns meta data about this system.
      *
      * @param collection $items The initialised item collection to add items to.
      * @return collection A listing of user data stored through this system.
      */
-    public static function get_metadata(collection $items) : collection {
+    public static function get_metadata(collection $items): collection {
         // There is one user preference.
         $items->add_user_preference(helper::LAST_COURSE_ROLE . 'ID', 'privacy:metadata:preference:lastcourserole');
         return $items;
@@ -75,7 +74,7 @@ class provider implements
      * @param int $userid The user to search.
      * @return contextlist $contextlist The contextlist containing the list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         global $DB;
 
         $contextlist = new contextlist();
@@ -89,7 +88,7 @@ class provider implements
         ];
         $prefs = $DB->get_fieldset_select('user_preferences', 'name', $sql, $params);
 
-        $instanceids = array_unique(array_map(function($prefname) {
+        $instanceids = array_unique(array_map(function ($prefname) {
             if (preg_match('/^' . helper::LAST_COURSE_ROLE . '(\d+)$/', $prefname, $matches)) {
                 return $matches[1];
             }
@@ -98,7 +97,7 @@ class provider implements
 
         // Find the context of the instances.
         if (!empty($instanceids)) {
-            list($insql, $inparams) = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED);
+            [$insql, $inparams] = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED);
             $sql = "
                 SELECT ctx.id
                   FROM {context} ctx
@@ -143,7 +142,7 @@ class provider implements
         $userid = $contextlist->get_user()->id;
 
         // Extract the course IDs.
-        $instanceids = array_reduce($contextlist->get_contexts(), function($carry, $context) {
+        $instanceids = array_reduce($contextlist->get_contexts(), function ($carry, $context) {
             if ($context->contextlevel == CONTEXT_COURSE) {
                 $carry[] = $context->instanceid;
             }
@@ -154,7 +153,7 @@ class provider implements
         }
 
         // Query the courses and their preferences.
-        list($insql, $inparams) = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED);
+        [$insql, $inparams] = $DB->get_in_or_equal($instanceids, SQL_PARAMS_NAMED);
         $prefkey = $DB->sql_concat("'" . helper::LAST_COURSE_ROLE . "'", 'c.id');
         $sql = "
             SELECT c.id AS courseid,
@@ -214,7 +213,7 @@ class provider implements
         global $DB;
 
         $userid = $contextlist->get_user()->id;
-        $prefkeys = array_reduce($contextlist->get_contexts(), function($carry, $context) {
+        $prefkeys = array_reduce($contextlist->get_contexts(), function ($carry, $context) {
             if ($context->contextlevel == CONTEXT_COURSE) {
                 $carry[] = helper::LAST_COURSE_ROLE . $context->instanceid;
             }
@@ -225,7 +224,7 @@ class provider implements
             return;
         }
 
-        list($insql, $inparams) = $DB->get_in_or_equal($prefkeys, SQL_PARAMS_NAMED);
+        [$insql, $inparams] = $DB->get_in_or_equal($prefkeys, SQL_PARAMS_NAMED);
         $sql = "userid = :userid AND name $insql";
         $params = array_merge($inparams, ['userid' => $userid]);
         $DB->delete_records_select('user_preferences', $sql, $params);
@@ -245,7 +244,7 @@ class provider implements
             return;
         }
 
-        list($insql, $params) = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+        [$insql, $params] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
         $params['prefkey'] = helper::LAST_COURSE_ROLE . $context->instanceid;
 
         $DB->delete_records_select('user_preferences', "name = :prefkey AND userid $insql", $params);

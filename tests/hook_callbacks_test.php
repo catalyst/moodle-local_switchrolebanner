@@ -25,8 +25,8 @@ use context_system;
  * @author     Scott Verbeek <scottverbeek@catalyst-au.net>
  * @copyright  2025 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \local_switchrolebanner\hook_callbacks
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(hook_callbacks::class)]
 final class hook_callbacks_test extends \advanced_testcase {
     /**
      * Test course instance.
@@ -67,8 +67,6 @@ final class hook_callbacks_test extends \advanced_testcase {
 
     /**
      * Check that callback is executed and inserts the html on page load.
-     *
-     * @covers ::before_footer_html_generation
      */
     public function test_before_footer_html_generation(): void {
         $this->resetAfterTest(true);

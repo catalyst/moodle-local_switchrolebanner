@@ -39,7 +39,6 @@ use moodle_url;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class helper {
-
     /**
      * The user preference value to indicate the last role a user switched to.
      *
@@ -67,7 +66,7 @@ class helper {
      *
      * @return bool if the banner should be shown
      */
-    public static function should_show_banner() : bool {
+    public static function should_show_banner(): bool {
         global $PAGE;
 
         if (!self::is_enabled()) {
@@ -140,7 +139,7 @@ class helper {
      *
      * @return bool if the user has an admin role
      */
-    public static function has_admin_role() : bool {
+    public static function has_admin_role(): bool {
         global $USER, $COURSE;
 
         if (isguestuser($USER)) {
@@ -157,7 +156,7 @@ class helper {
      *
      * @return array an array of roles
      */
-    public static function get_user_switchable_course_roles() : array {
+    public static function get_user_switchable_course_roles(): array {
         global $USER, $COURSE;
 
         if (!is_null(self::$switchablecourseroles) && !PHPUNIT_TEST) {
@@ -194,7 +193,7 @@ class helper {
      *
      * @return array an array of roles
      */
-    public static function get_user_course_roles() : array {
+    public static function get_user_course_roles(): array {
         global $USER, $COURSE;
 
         if (!is_null(self::$courseroles) && !PHPUNIT_TEST) {
@@ -218,7 +217,7 @@ class helper {
      *
      * @return int the id of the switched role or 0 if role has not been switched
      */
-    public static function get_user_switched_course_role() : int {
+    public static function get_user_switched_course_role(): int {
         global $USER, $COURSE;
 
         if (!is_null(self::$switchedcourserole) && !PHPUNIT_TEST) {
@@ -245,7 +244,7 @@ class helper {
      *
      * @return string banner HTML
      */
-    public static function get_banner_html() : string {
+    public static function get_banner_html(): string {
         global $PAGE;
 
         $renderable = new banner();
@@ -261,7 +260,7 @@ class helper {
      * @param int $roleid the role id to store
      * @return void
      */
-    public static function set_user_last_role(int $roleid) : void {
+    public static function set_user_last_role(int $roleid): void {
         global $COURSE;
 
         $key = self::LAST_COURSE_ROLE . $COURSE->id;
@@ -278,7 +277,7 @@ class helper {
      *
      * @return int the last role id the user switched to for this course
      */
-    public static function get_user_last_role() : int {
+    public static function get_user_last_role(): int {
         global $COURSE;
 
         return get_user_preferences(self::LAST_COURSE_ROLE . $COURSE->id, 0);
@@ -290,7 +289,7 @@ class helper {
      *
      * @return void
      */
-    public static function handle_role_switch() : void {
+    public static function handle_role_switch(): void {
         global $COURSE;
 
         if (!self::is_enabled()) {
@@ -331,7 +330,7 @@ class helper {
      *
      * @return bool if the banner has been hidden
      */
-    public static function is_banner_hidden() : bool {
+    public static function is_banner_hidden(): bool {
         global $SESSION, $COURSE;
 
         if (!isset($SESSION->local_switchrolebanner_hide)) {
@@ -348,7 +347,7 @@ class helper {
      * @param int $courseid the id of the course to hide the banner for
      * @return void
      */
-    public static function hide_banner($courseid) : void {
+    public static function hide_banner($courseid): void {
         global $SESSION;
 
         if (isset($SESSION->local_switchrolebanner_hide)) {

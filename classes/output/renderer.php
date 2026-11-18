@@ -36,14 +36,13 @@ use plugin_renderer_base;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Return the banner HTML.
      *
      * @param banner $banner The banner renderable
      * @return string HTML string
      */
-    public function render_banner(banner $banner) : string {
+    public function render_banner(banner $banner): string {
         return $this->render_from_template('local_switchrolebanner/banner', $banner->export_for_template($this));
     }
 }

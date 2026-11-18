@@ -46,7 +46,7 @@ class banner implements renderable, templatable {
      * @param \renderer_base $output
      * @return array Context variables for the template
      */
-    public function export_for_template(renderer_base $output) : array {
+    public function export_for_template(renderer_base $output): array {
         global $OUTPUT, $PAGE;
 
         $infomessage = '';
@@ -54,15 +54,17 @@ class banner implements renderable, templatable {
 
         $switchedrole = helper::get_user_switched_course_role();
         $switchablecourseroles = helper::get_user_switchable_course_roles();
-        $containerclasses = 'switchrolebanner-btncontainer mr-2 mb-1';
+        $containerclasses = 'switchrolebanner-btncontainer me-2 mb-1';
 
         if (!empty($switchedrole)) {
             $rolenames = role_get_names();
             $rolename = $rolenames[$switchedrole]->localname;
             $infomessage = get_string('viewingasrole', 'local_switchrolebanner', $rolename);
 
-            $url = new moodle_url('/course/switchrole.php',
-                    ['id' => $PAGE->course->id, 'switchrole' => 0, 'returnurl' => $PAGE->url]);
+            $url = new moodle_url(
+                '/course/switchrole.php',
+                ['id' => $PAGE->course->id, 'switchrole' => 0, 'returnurl' => $PAGE->url]
+            );
             $label = get_string('switchrolereturn');
             $button = $OUTPUT->single_button($url, htmlspecialchars_decode($label, ENT_COMPAT));
             $buttonshtml = $OUTPUT->container($button, $containerclasses);
@@ -71,8 +73,10 @@ class banner implements renderable, templatable {
 
             $buttonshtml = $OUTPUT->container(get_string('switchroleto'), $containerclasses);
             foreach ($switchablecourseroles as $key => $role) {
-                $url = new moodle_url('/course/switchrole.php',
-                        ['id' => $PAGE->course->id, 'switchrole' => $key, 'returnurl' => $PAGE->url]);
+                $url = new moodle_url(
+                    '/course/switchrole.php',
+                    ['id' => $PAGE->course->id, 'switchrole' => $key, 'returnurl' => $PAGE->url]
+                );
                 $button = $OUTPUT->single_button($url, htmlspecialchars_decode($role, ENT_COMPAT));
                 $buttonshtml .= $OUTPUT->container($button, $containerclasses);
             }

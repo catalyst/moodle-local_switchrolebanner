@@ -25,15 +25,11 @@
 
 namespace local_switchrolebanner;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once("$CFG->libdir/externallib.php");
-
-use external_api;
-use external_function_parameters;
-use external_value;
-use external_single_structure;
 use context_course;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_value;
 
 /**
  * External API class.
@@ -44,16 +40,15 @@ use context_course;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class external extends external_api {
-
     /**
      * Returns description of method parameters
      * @return external_function_parameters
      */
     public static function hide_banner_parameters() {
         return new external_function_parameters(
-                [
-                    'courseid' => new external_value(PARAM_INT, 'Course code', VALUE_REQUIRED),
-                ]
+            [
+                'courseid' => new external_value(PARAM_INT, 'Course code', VALUE_REQUIRED),
+            ]
         );
     }
 
@@ -64,17 +59,18 @@ class external extends external_api {
      * @return array|bool if the banner was hidden
      */
     public static function hide_banner($courseid) {
-        global $PAGE, $DB;
+        global $PAGE;
 
-        $PAGE->set_context(context_course::instance($courseid));
-
-        $params = self::validate_parameters(self::hide_banner_parameters(),
+        $params = self::validate_parameters(
+            self::hide_banner_parameters(),
             [
                 'courseid' => $courseid,
             ]
         );
 
-        helper::hide_banner($courseid);
+        $PAGE->set_context(context_course::instance($params['courseid']));
+
+        helper::hide_banner($params['courseid']);
 
         return ['result' => true];
     }
@@ -82,7 +78,7 @@ class external extends external_api {
     /**
      * Returns success result.
      *
-     * @return external_description
+     * @return external_single_structure
      */
     public static function hide_banner_returns() {
         return new external_single_structure([

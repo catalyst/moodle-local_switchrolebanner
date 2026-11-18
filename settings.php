@@ -26,7 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 if (is_siteadmin()) {
-
     $settings = new admin_settingpage('local_switchrolebanner', get_string('pluginname', 'local_switchrolebanner'));
     $ADMIN->add('localplugins', $settings);
 

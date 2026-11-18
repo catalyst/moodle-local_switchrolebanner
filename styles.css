@@ -1,4 +1,5 @@
-#switchrolebanner-banner .close {
+#switchrolebanner-banner .btn-close {
+    float: right;
     margin-left: 10px;
 }
 

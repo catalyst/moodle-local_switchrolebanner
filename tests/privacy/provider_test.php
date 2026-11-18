@@ -38,10 +38,9 @@ use local_switchrolebanner\helper;
  * @author     Rossco Hellmans <rosscohellmans@catalyst-au.net>
  * @copyright  2023 Catalyst IT
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @coversDefaultClass \local_switchrolebanner\privacy\provider
  */
-class provider_test extends provider_testcase {
-
+#[\PHPUnit\Framework\Attributes\CoversClass(provider::class)]
+final class provider_test extends provider_testcase {
     /** @var stdClass a course object. */
     private $c1;
     /** @var stdClass a course object. */
@@ -88,9 +87,8 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that contexts are returned for a given user.
-     * @covers ::get_contexts_for_userid
      */
-    public function test_get_contexts_for_userid() {
+    public function test_get_contexts_for_userid(): void {
         global $DB, $PAGE;
 
         $this->setUser($this->u1);
@@ -113,9 +111,8 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that user IDs are returned for a given context.
-     * @covers ::get_users_in_context
      */
-    public function test_get_users_in_context() {
+    public function test_get_users_in_context(): void {
         global $DB, $PAGE;
 
         $u3 = $this->getDataGenerator()->create_user();
@@ -136,9 +133,8 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that data is deleted for a given user.
-     * @covers ::delete_data_for_user
      */
-    public function test_delete_data_for_user() {
+    public function test_delete_data_for_user(): void {
         global $DB, $PAGE;
 
         $usercourses = [
@@ -148,8 +144,11 @@ class provider_test extends provider_testcase {
         $this->setprefs($usercourses);
         $this->assertprefexists($usercourses);
 
-        provider::delete_data_for_user(new approved_contextlist($this->u1, 'local_switchrolebanner',
-                [$this->c1ctx->id, $this->c2ctx->id]));
+        provider::delete_data_for_user(new approved_contextlist(
+            $this->u1,
+            'local_switchrolebanner',
+            [$this->c1ctx->id, $this->c2ctx->id]
+        ));
         $usercourses = [$this->u1->id => [$this->c1, $this->c2]];
         $this->assertprefnotexists($usercourses);
         $usercourses = [
@@ -161,9 +160,8 @@ class provider_test extends provider_testcase {
 
     /**
      * Test that data is deleted for a given context.
-     * @covers ::delete_data_for_all_users_in_context
      */
-    public function test_delete_data_for_all_users_in_context() {
+    public function test_delete_data_for_all_users_in_context(): void {
         global $DB, $PAGE;
 
         $dg = $this->getDataGenerator();
@@ -204,9 +202,8 @@ class provider_test extends provider_testcase {
 
     /**
      * Test the deletion of data related to a context and a list of users.
-     * @covers ::delete_data_for_users
      */
-    public function test_delete_data_for_users() {
+    public function test_delete_data_for_users(): void {
         global $DB, $PAGE;
 
         $u3 = $this->getDataGenerator()->create_user();
@@ -224,8 +221,11 @@ class provider_test extends provider_testcase {
         $this->assertCount(3, $userlist->get_userids());
 
         // Delete preferences for user 1 and 3 for course.
-        $userlist = new \core_privacy\local\request\approved_userlist($this->c1ctx, 'local_switchrolebanner',
-                [$this->u1->id, $u3->id]);
+        $userlist = new \core_privacy\local\request\approved_userlist(
+            $this->c1ctx,
+            'local_switchrolebanner',
+            [$this->u1->id, $u3->id]
+        );
         provider::delete_data_for_users($userlist);
 
         // Only user 2's preference is left.
@@ -236,9 +236,8 @@ class provider_test extends provider_testcase {
 
     /**
      * Test data is exported for a given user.
-     * @covers ::export_data_for_user
      */
-    public function test_export_data_for_user() {
+    public function test_export_data_for_user(): void {
         global $DB, $PAGE;
 
         $usercourses = [
@@ -248,8 +247,11 @@ class provider_test extends provider_testcase {
         $this->setprefs($usercourses);
 
         // Export data.
-        provider::export_user_data(new approved_contextlist($this->u1, 'local_switchrolebanner',
-            [$this->c1ctx->id, $this->c2ctx->id, $this->c3ctx->id]));
+        provider::export_user_data(new approved_contextlist(
+            $this->u1,
+            'local_switchrolebanner',
+            [$this->c1ctx->id, $this->c2ctx->id, $this->c3ctx->id]
+        ));
         $prefs = writer::with_context($this->c3ctx)->get_user_context_preferences('local_switchrolebanner');
         $this->assertEmpty((array) $prefs);
 
