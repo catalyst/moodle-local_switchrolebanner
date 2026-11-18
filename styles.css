@@ -1,6 +1,19 @@
-#switchrolebanner-banner .btn-close {
+#switchrolebanner-banner .switchrolebanner-close {
     float: right;
     margin-left: 10px;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    color: #000;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    opacity: .5;
+}
+
+#switchrolebanner-banner .switchrolebanner-close:hover,
+#switchrolebanner-banner .switchrolebanner-close:focus {
+    opacity: .75;
 }
 
 #switchrolebanner-banner .switchrolebanner-btncontainer {
